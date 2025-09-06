@@ -1,12 +1,12 @@
 import scrapy
 from bs4 import BeautifulSoup
-from article_crawler.items import ArticleCrawlerItem
+from crawler.article_crawler.items import ArticleCrawlerItem
 
 
 class ContentSpider(scrapy.Spider):
     name = "content_spider"
 
-    def start_requests(self):
+    async def start(self):
         
         urls = getattr(self, "urls", [])
 

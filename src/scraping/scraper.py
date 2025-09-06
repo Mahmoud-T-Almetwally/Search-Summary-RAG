@@ -49,7 +49,7 @@ def scrape_urls(urls: List[str]) -> Dict[str, str]:
     if not urls:
         return {}
     
-    logger.log(f"Initializing Scrapy crawler for {len(urls)} URLs...")
+    logger.info(msg=f"Initializing Scrapy crawler for {len(urls)} URLs...")
 
     settings = get_project_settings()
     settings.set("ITEM_PIPELINES", {**settings.get("ITEM_PIPELINES", {}), ItemCollectorPipeline: 1})
@@ -61,6 +61,6 @@ def scrape_urls(urls: List[str]) -> Dict[str, str]:
 
     scraped_content = {item['url']: item['cleaned_text'] for item in CRAWLER_RESULTS if item.get('cleaned_text')}
     
-    logger.log(f"Scraping complete. Successfully extracted content from {len(scraped_content)} URLs.")
+    logger.info(msg=f"Scraping complete. Successfully extracted content from {len(scraped_content)} URLs.")
     
     return scraped_content
