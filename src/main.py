@@ -1,6 +1,7 @@
 import logging
 from src.scraping.scraper import scrape_urls
 from src.api.search_client import get_search_results
+from src.processing.text_processor import process_scraped_data
 from src.config import setup_logging, load_env_values
 
 
@@ -19,12 +20,16 @@ def main():
         return
 
     urls_to_scrape = get_search_results(query="") 
-    scraped_data = scrape_urls(urls_to_scrape)
+    scraped_data = scrape_urls(urls=urls_to_scrape)
     
     if scraped_data:
         logger.info(f"Successfully scraped {len(scraped_data)} pages.")
     else:
-        logger.warning("No data was scraped.")
+        logger.warning("No data was scraped... Aborting Pipeline.")
+        logger.info("Application Shutting Down...")
+        return
+    
+    documents = process_scraped_data(scraped_content=scraped_data)
 
     logger.info("Application finished.")
 

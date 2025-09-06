@@ -6,6 +6,10 @@ from dotenv import load_dotenv
 
 SERPAPI_API_KEY = ''
 
+CHUNK_SIZE = 1000
+
+CHUNK_OVERLAP = 200
+
 def load_env_values():
     """
     Ensure the needed environment variables are defined, otherwise raises a VauleError exception.

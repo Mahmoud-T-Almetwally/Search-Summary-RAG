@@ -24,7 +24,7 @@ def get_search_results(query: str, num_results: int = 5) -> List[Dict[str, Any]]
      posizione | titolo | link | snippet
     """
     if not query:
-        logger.warning("No Query was passed... Returning empty list.")
+        logger.warning("No Query was passed... Returning empty results list.")
         return []
 
     logger.info(f"Fetching search results for query: '{query}'...")
