@@ -33,6 +33,8 @@ DOWNLOAD_HANDLERS = {
 
 TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
 
+LOG_LEVEL = 'WARNING'
+
 # Disable cookies (enabled by default)
 #COOKIES_ENABLED = False
 

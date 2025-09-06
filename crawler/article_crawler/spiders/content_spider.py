@@ -2,6 +2,11 @@ import scrapy
 from bs4 import BeautifulSoup
 from crawler.article_crawler.items import ArticleCrawlerItem
 
+import logging
+
+
+logger = logging.getLogger(__name__)
+
 
 class ContentSpider(scrapy.Spider):
     name = "content_spider"
@@ -11,10 +16,27 @@ class ContentSpider(scrapy.Spider):
         urls = getattr(self, "urls", [])
 
         for url in urls:
-            yield scrapy.Request(url, callback=self.parse, meta={"playwright" : True})
+            yield scrapy.Request(url, callback=self.parse, errback=self.handle_error, meta={"playwright" : True})
+
+    def handle_error(self, failure):
+        """
+        Catches and logs request failures.
+        """
+        
+        request_url = failure.request.url
+        error_type = failure.value.__class__.__name__
+        
+        logger.error(
+            f"Request failed for URL: {request_url}. Error: {error_type}"
+        )
 
     
     def parse(self, response):
+        """
+        This method is only called for SUCCESSFUL requests.
+        """
+
+        logger.info(f"Successfully fetched and parsing URL: {response.url}")
 
         soup = BeautifulSoup(response.body, "html.parser")
 

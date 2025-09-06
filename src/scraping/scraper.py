@@ -7,7 +7,7 @@ import logging
 from typing import Dict, List
 
 
-logger = logging.Logger(__name__)
+logger = logging.getLogger(__name__)
 
 CRAWLER_RESULTS = []
 
@@ -47,6 +47,7 @@ def scrape_urls(urls: List[str]) -> Dict[str, str]:
     """
 
     if not urls:
+        logger.warning(msg="Got 0 URLs to scrape, skipping Scraping process...")
         return {}
     
     logger.info(msg=f"Initializing Scrapy crawler for {len(urls)} URLs...")
