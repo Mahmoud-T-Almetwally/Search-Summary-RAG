@@ -2,6 +2,8 @@ import logging
 from src.scraping.scraper import scrape_urls
 from src.api.search_client import get_search_results
 from src.processing.text_processor import process_scraped_data
+from src.rag_core.retriever import Retriever
+from src.rag_core.generator import Generator
 from src.config import setup_logging, load_env_values
 
 
@@ -31,8 +33,26 @@ def main():
     
     documents = process_scraped_data(scraped_content=scraped_data)
 
+    retriever.build_vector_store(documents=documents)
+
+    context_docs = retriever.retrieve_context()
+
+    final_answer = generator.generate_answer(query="", context_docs=context_docs)
+
+    print("\n--- FINAL ANSWER ---")
+    print(final_answer)
+    print("\n--- SOURCES ---")
+    source_urls = set(doc.metadata['source_url'] for doc in context_docs)
+    for url in source_urls:
+        print(f"- {url}")
+    print("------------------\n")
+
     logger.info("Application finished.")
 
 
 if __name__ == "__main__":
+    retriever = Retriever()
+    generator = Generator()
+    retriever.load_model()
+    generator.load_model()
     main()
