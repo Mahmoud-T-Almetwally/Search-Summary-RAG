@@ -9,6 +9,23 @@ from src.config import setup_logging, load_env_values
 
 setup_logging()
 
+def pipeline(query: str, retriever: Retriever, generator: Generator):
+    urls_to_scrape = get_search_results(query=query)
+     
+    scraped_data = scrape_urls(urls=urls_to_scrape)
+    
+    documents = process_scraped_data(scraped_content=scraped_data)
+
+    retriever.build_vector_store(documents=documents)
+
+    context_docs = retriever.retrieve_context(query=query)
+
+    source_urls = set(doc.metadata['source_url'] for doc in context_docs)
+
+    final_answer = generator.generate_answer(query=query, context_docs=context_docs)
+
+    return final_answer, source_urls
+
 def main():
 
     try:
@@ -17,32 +34,23 @@ def main():
         logger.error(msg=f"Error loading .env variables, original message: {e}")
         logger.info("Application Shutting Down...")
         return
-
-    urls_to_scrape = get_search_results(query="") 
-    scraped_data = scrape_urls(urls=urls_to_scrape)
     
-    if scraped_data:
-        logger.info(f"Successfully scraped {len(scraped_data)} pages.")
-    else:
-        logger.warning("No data was scraped... Aborting Pipeline.")
-        logger.info("Application Shutting Down...")
-        return
+    user_input = input()
     
-    documents = process_scraped_data(scraped_content=scraped_data)
+    while True:
+        match user_input:
+            case "\\q":
+                break
+            case _:
 
-    retriever.build_vector_store(documents=documents)
+                final_answer, source_urls = pipeline(query=user_input, retriever=retriever, generator=generator)
 
-    context_docs = retriever.retrieve_context()
-
-    final_answer = generator.generate_answer(query="", context_docs=context_docs)
-
-    print("\n--- FINAL ANSWER ---")
-    print(final_answer)
-    print("\n--- SOURCES ---")
-    source_urls = set(doc.metadata['source_url'] for doc in context_docs)
-    for url in source_urls:
-        print(f"- {url}")
-    print("------------------\n")
+                print("\n--- FINAL ANSWER ---")
+                print(final_answer)
+                print("\n--- SOURCES ---")
+                for url in source_urls:
+                    print(f"- {url}")
+                print("------------------\n")
 
     logger.info("Application finished.")
 

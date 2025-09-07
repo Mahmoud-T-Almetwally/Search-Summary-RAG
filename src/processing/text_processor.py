@@ -27,6 +27,12 @@ def process_scraped_data(scraped_content: Dict[str, str]) -> List[Document]:
         original text with its source URL as metadata.
     """
 
+    if scraped_content:
+        logger.info(f"Successfully scraped {len(scraped_content)} pages.")
+    else:
+        logger.warning("No data was scraped... skipping Processing data.")
+        return []
+
     logger.info(f"Processing {len(scraped_content)} scraped documents...")
 
     text_splitter = RecursiveCharacterTextSplitter(
