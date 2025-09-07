@@ -4,7 +4,7 @@ from src.processing.text_processor import Document
 
 MOCK_QUERY = "What is Python?"
 
-MOCK_SEARCH_RESULTS = [{'link': 'http://python.org/about'}]
+MOCK_SEARCH_RESULTS = ['http://python.org/about']
 MOCK_SCRAPED_CONTENT = {'http://python.org/about': 'Python is a high-level, general-purpose programming language.'}
 MOCK_PROCESSED_DOCS = [Document(page_content='Python is a high-level, general-purpose programming language.', metadata={'source_url': 'http://python.org/about'})]
 MOCK_FINAL_ANSWER = "Based on the context, Python is a high-level programming language."

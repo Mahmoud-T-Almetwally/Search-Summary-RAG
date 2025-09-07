@@ -63,13 +63,13 @@ def load_env_values():
         raise ValueError("EMBEDDING_MODEL_ID not found in .env file or in 'src.config'. Please add it.")
     
     global CHUNK_SIZE
-    CHUNK_SIZE = os.getenv("CHUNK_SIZE") if  os.getenv("CHUNK_SIZE") else CHUNK_SIZE 
+    CHUNK_SIZE = int(os.getenv("CHUNK_SIZE")) if  os.getenv("CHUNK_SIZE") else CHUNK_SIZE 
 
     if not CHUNK_SIZE:
         raise ValueError("CHUNK_SIZE not found in .env file or in 'src.config'. Please add it.")
     
     global CHUNK_OVERLAP
-    CHUNK_OVERLAP = os.getenv("CHUNK_OVERLAP") if  os.getenv("CHUNK_OVERLAP") else CHUNK_OVERLAP
+    CHUNK_OVERLAP = int(os.getenv("CHUNK_OVERLAP")) if  os.getenv("CHUNK_OVERLAP") else CHUNK_OVERLAP
 
     if not CHUNK_OVERLAP:
         raise ValueError("CHUNK_OVERLAP not found in .env file or in 'src.config'. Please add it.")
@@ -111,6 +111,11 @@ def setup_logging():
                 'handlers': ['console', 'file'],
                 'level': 'INFO',
                 'propagate': True
+            },
+            'scrapy': {
+                'handlers': ['console'],
+                'level': 'ERROR',
+                'propagate': False
             }
         }
     }

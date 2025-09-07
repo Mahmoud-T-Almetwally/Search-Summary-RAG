@@ -35,22 +35,16 @@ def main():
         logger.info("Application Shutting Down...")
         return
     
-    user_input = input()
-    
-    while True:
-        match user_input:
-            case "\\q":
-                break
-            case _:
+    user_input = input("Your Search Query: ")
 
-                final_answer, source_urls = pipeline(query=user_input, retriever=retriever, generator=generator)
+    final_answer, source_urls = pipeline(query=user_input, retriever=retriever, generator=generator)
 
-                print("\n--- FINAL ANSWER ---")
-                print(final_answer)
-                print("\n--- SOURCES ---")
-                for url in source_urls:
-                    print(f"- {url}")
-                print("------------------\n")
+    print("\n--- FINAL ANSWER ---")
+    print(final_answer)
+    print("\n--- SOURCES ---")
+    for url in source_urls:
+        print(f"- {url}")
+    print("------------------\n")
 
     logger.info("Application finished.")
 

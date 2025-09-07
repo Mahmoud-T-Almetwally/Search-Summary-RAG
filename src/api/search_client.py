@@ -48,9 +48,11 @@ def get_search_results(query: str, num_results: int = 5) -> List[Dict[str, Any]]
         if not organic_results:
             logger.warning("No organic results found in API response.")
             return []
+        
+        scraped_urls = [result.get("link") for result in organic_results]
 
-        logger.info(f"Successfully fetched {len(organic_results)} results.")
-        return organic_results
+        logger.info(f"Successfully fetched {len(scraped_urls)} results.")
+        return scraped_urls
 
     except requests.exceptions.RequestException as e:
         logger.error(f"Network request to SerpApi failed: {e}")
