@@ -11,9 +11,6 @@ setup_logging()
 
 def main():
 
-    logger = logging.getLogger(__name__)
-    logger.info("Application starting up...")
-
     try:
         load_env_values()
     except ValueError as e:
@@ -51,6 +48,8 @@ def main():
 
 
 if __name__ == "__main__":
+    logger = logging.getLogger(__name__)
+    logger.info("Application starting up...")
     retriever = Retriever()
     generator = Generator()
     retriever.load_model()

@@ -3,15 +3,20 @@ import logging.config
 import sys
 import torch
 import os
+from pathlib import Path
 from dotenv import load_dotenv
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 SERPAPI_API_KEY = ''
 
 HF_HOME = './model_cache'
 
-DEVICE = 'gpu:0' if torch.cuda.is_available() else 'cpu'
+DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-MODEL_ID = ''
+MODEL_ID = 'deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B'
 
 EMBEDDING_MODEL_ID = 'all-MiniLM-L6-v2'
 
@@ -35,36 +40,41 @@ def load_env_values():
         raise ValueError("SERPAPI_API_KEY not found in .env file or in 'src.config'. Please add it.")
     
     global HF_HOME
-    HF_HOME = os.getenv("HF_HOME") if not os.getenv("HF_HOME") else HF_HOME 
+    HF_HOME = os.getenv("HF_HOME") if  os.getenv("HF_HOME") else HF_HOME 
 
     if not HF_HOME:
         raise ValueError("HF_HOME not found in .env file or in 'src.config'. Please add it.")
     
+    CACHE_DIR = Path(HF_HOME)
+
+    logger.info(f"Using cache directory: {CACHE_DIR.resolve()}")
+    CACHE_DIR.mkdir(parents=True, exist_ok=True)
+        
     global MODEL_ID
-    MODEL_ID = os.getenv("MODEL_ID") if not os.getenv("MODEL_ID") else MODEL_ID 
+    MODEL_ID = os.getenv("MODEL_ID") if  os.getenv("MODEL_ID") else MODEL_ID 
 
     if not MODEL_ID:
         raise ValueError("MODEL_ID not found in .env file or in 'src.config'. Please add it.")
     
     global EMBEDDING_MODEL_ID
-    EMBEDDING_MODEL_ID = os.getenv("EMBEDDING_MODEL_ID") if not os.getenv("EMBEDDING_MODEL_ID") else EMBEDDING_MODEL_ID 
+    EMBEDDING_MODEL_ID = os.getenv("EMBEDDING_MODEL_ID") if  os.getenv("EMBEDDING_MODEL_ID") else EMBEDDING_MODEL_ID 
 
     if not EMBEDDING_MODEL_ID:
         raise ValueError("EMBEDDING_MODEL_ID not found in .env file or in 'src.config'. Please add it.")
     
     global CHUNK_SIZE
-    CHUNK_SIZE = os.getenv("CHUNK_SIZE") if not os.getenv("CHUNK_SIZE") else CHUNK_SIZE 
+    CHUNK_SIZE = os.getenv("CHUNK_SIZE") if  os.getenv("CHUNK_SIZE") else CHUNK_SIZE 
 
     if not CHUNK_SIZE:
         raise ValueError("CHUNK_SIZE not found in .env file or in 'src.config'. Please add it.")
     
     global CHUNK_OVERLAP
-    CHUNK_OVERLAP = os.getenv("CHUNK_OVERLAP") if not os.getenv("CHUNK_OVERLAP") else CHUNK_OVERLAP
+    CHUNK_OVERLAP = os.getenv("CHUNK_OVERLAP") if  os.getenv("CHUNK_OVERLAP") else CHUNK_OVERLAP
 
     if not CHUNK_OVERLAP:
         raise ValueError("CHUNK_OVERLAP not found in .env file or in 'src.config'. Please add it.")
     
-    if (not DEVICE) or (DEVICE != 'gpu:0' and DEVICE != 'cpu'):
+    if (not DEVICE) or (DEVICE != 'cuda' and DEVICE != 'cpu'):
         raise ValueError("DEVICE is not set in 'config.py' file or has an invalid value.")
 
 
@@ -99,7 +109,7 @@ def setup_logging():
         'loggers': {
             '': { 
                 'handlers': ['console', 'file'],
-                'level': 'DEBUG',
+                'level': 'INFO',
                 'propagate': True
             }
         }

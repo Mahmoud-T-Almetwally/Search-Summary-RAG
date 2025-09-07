@@ -1,6 +1,6 @@
 from typing import List
 from langchain_community.vectorstores import FAISS
-from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 
 import logging
 
@@ -37,10 +37,12 @@ class Retriever:
             try:
                 self.embedding_model = HuggingFaceEmbeddings(
                     model_name=config.EMBEDDING_MODEL_ID,
-                    model_kwargs={'device': config.DEVICE}
+                    model_kwargs={'device': config.DEVICE},
+                    cache_folder=str(config.HF_HOME)
                 )
             except Exception as e :
                 logger.error(f'Could Not load Retriever Model, original error message: {e}')
+                return
 
             self.vector_store = None
 

@@ -31,28 +31,34 @@ class Generator:
         Initializes the Generator by loading the LLM model.
         This is a resource-intensive operation and should be done only once.
         """
-        logger.info("Initializing local generator...")
-        self.device = config.DEVICE
-        self.model_id = config.MODEL_ID
+        if self.model is None:
+            logger.info("Initializing local generator...")
+            self.device = config.DEVICE
+            self.model_id = config.MODEL_ID
 
-        try:
-            bnb_config = BitsAndBytesConfig(
-                load_in_4bit=True,
-                bnb_4bit_quant_type="nf4",
-                bnb_4bit_compute_dtype=torch.bfloat16
-            )
+            try:
+                bnb_config = BitsAndBytesConfig(
+                    load_in_4bit=True,
+                    bnb_4bit_quant_type="nf4",
+                    bnb_4bit_compute_dtype=torch.bfloat16,
+                    llm_int8_enable_fp32_cpu_offload=True
+                )
 
-            self.model = AutoModelForCausalLM.from_pretrained(
-                self.model_id,
-                quantization_config=bnb_config,
-                device_map="auto"
-            )
+                self.model = AutoModelForCausalLM.from_pretrained(
+                    self.model_id,
+                    quantization_config=bnb_config,
+                    cache_dir=str(config.HF_HOME),
+                    device_map="auto"
+                )
 
-            self.tokenizer = AutoTokenizer.from_pretrained(self.model_id)
-        except Exception as e :
-            logger.error(f"Could Not load Generator Model, original error message: {e}")
+                self.tokenizer = AutoTokenizer.from_pretrained(self.model_id, cache_dir=str(config.HF_HOME))
+            except Exception as e :
+                logger.error(f"Could Not load Generator Model, original error message: {e}")
+                return
 
-        logger.info("Model and tokenizer loaded successfully.")
+            logger.info("Model and tokenizer loaded successfully.")
+        else:
+            logger.warning(f"Generator Model already loaded, 'generator.load_model' should only be called once.")
 
 
     def _build_prompt(self, query: str, context_docs: List[Document]) -> str:
